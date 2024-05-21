@@ -1,0 +1,10 @@
+{
+	"profiles": {
+		"ClassToXaml.Windows (Unpackaged)": {
+			"commandName": "Project"
+		},
+		"ClassToXaml.Windows (Package)": {
+			"commandName": "MsixPackage"
+		}
+	}
+}

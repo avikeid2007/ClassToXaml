@@ -1,0 +1,10 @@
+<linker>
+  <assembly fullname="ClassToXaml" />
+  <assembly fullname="ClassToXaml.Wasm" />
+  <assembly fullname="System.Private.CoreLib" />
+
+  <assembly fullname="System.Core">
+    <type fullname="System.Linq.Expressions*" />
+  </assembly>
+ 
+</linker>

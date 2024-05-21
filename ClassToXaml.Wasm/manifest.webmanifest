@@ -1,0 +1,10 @@
+{
+  "background_color": "#ffffff",
+  "description": "ClassToXaml",
+  "display": "standalone",
+  "name": "ClassToXaml",
+  "short_name": "ClassToXaml",
+  "start_url": "/index.html",
+  "theme_color": "#ffffff",
+  "scope": "/"
+}
