@@ -20,11 +20,45 @@ public partial class MainViewModel : ObservableObject
         _navigator = navigator;
         // Title = "Main";
         GoToSecond = new AsyncRelayCommand(GoToSecondView);
+        NoOfColumn = 1;
+        IsUseGrid = true;
+        IsUseTextBlock = false;
+        IsUseTwoWayBinding = true;
+        IsUseXBind = false;
+        forUWP = true;
     }
     [ObservableProperty]
     private string? inputText;
     [ObservableProperty]
+    private bool isUseGrid;
+    [ObservableProperty]
+    private bool isUseTextBlock;
+    [ObservableProperty]
+    private bool isUseTwoWayBinding;
+    [ObservableProperty]
+    private bool isUseXBind;
+    [ObservableProperty]
+    private bool forUWP;
+    [ObservableProperty]
+    private bool forWPF;
+    [ObservableProperty]
+    private bool forMAUI;
+    [ObservableProperty]
+    private int noOfColumn;
+    [ObservableProperty]
+    private string margin;
+    [ObservableProperty]
     private string? outputText;
+    [ObservableProperty]
+    private string? styleForTextBox;
+    [ObservableProperty]
+    private string? styleForTextBlock;
+    [ObservableProperty]
+    private string? styleForCheckBox;
+    [ObservableProperty]
+    private string? styleForDateTime;
+    [ObservableProperty]
+    private string? styleForCombo;
     public RelayCommand GenerateCommand => new RelayCommand(OnGenerateCommandExecuted);
     public RelayCommand CopyCommand => new RelayCommand(OnCopyCommandExecuted);
     public RelayCommand ClearCommand => new RelayCommand(OnClearCommandExecuted);
@@ -164,7 +198,7 @@ public partial class MainViewModel : ObservableObject
 
     public void GenerateXamlForClass()
     {
-        OutputText = GenerateXamlForClass(InputText, 3);
+        OutputText = GenerateXamlForClass(InputText, NoOfColumn);
     }
     public string GenerateXamlForClass(string classText, int columnCount)
     {
@@ -173,56 +207,115 @@ public partial class MainViewModel : ObservableObject
             return string.Empty;
         }
         var properties = GetPublicProperty(classText);
-
-        StringBuilder xamlBuilder = new StringBuilder();
-        xamlBuilder.AppendLine("<Grid>");
-
+        if (properties == null || !properties.Any())
+        {
+            return string.Empty;
+        }
+        StringBuilder xamlBuilder = new();
+        xamlBuilder.AppendLine(IsUseGrid ? "<Grid>" : "<StackPanel>");
         int row = 0;
         foreach (var property in properties)
         {
-            switch (property.Type)
-            {
-                case "string":
-                case "int":
-                case "double":
-                case "float":
-                case "decimal":
-                    xamlBuilder.AppendLine($"    <TextBox PlaceholderText=\"{property.Name}\"   Text=\"{{Binding {property.Name}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}}\" Margin=\"5\" VerticalAlignment=\"Center\" Grid.Column=\"{row % columnCount}\" Grid.Row=\"{row / columnCount}\"/>");
-                    break;
-                case "DateTime":
-                case "DateTimeOffset":
-                    xamlBuilder.AppendLine($"    <DatePicker PlaceholderText=\"{property.Name}\" SelectedDate=\"{{Binding {property.Name}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}}\" Margin=\"5\" VerticalAlignment=\"Center\" Grid.Column=\"{row % columnCount}\" Grid.Row=\"{row / columnCount}\"/>");
-                    break;
-                case "bool":
-                    xamlBuilder.AppendLine($"    <CheckBox   Content=\"{property.Name}\" IsChecked=\"{{Binding {property.Name}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}}\" Margin=\"5\" VerticalAlignment=\"Center\" Grid.Column=\"{row % columnCount}\" Grid.Row=\"{row / columnCount}\"/>");
-                    break;
-                case "Guid":
-                    xamlBuilder.AppendLine($"    <ComboBox PlaceholderText=\"{property.Name}\"   SelectedValue=\"{{Binding {property.Name}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}}\" Margin=\"5\" VerticalAlignment=\"Center\" Grid.Column=\"{row % columnCount}\" Grid.Row=\"{row / columnCount}\"/>");
-                    break;
-                default:
-                    // For other types, just display the type name
-                    xamlBuilder.AppendLine($"    <TextBlock Text=\"{{Binding {property.Name}}}\" Margin=\"5\" VerticalAlignment=\"Center\" Grid.Column=\"{row % columnCount}\" Grid.Row=\"{row / columnCount}\"/>");
-                    break;
-            }
+            GenerateControlText(columnCount, xamlBuilder, row, property);
             row++;
         }
-        xamlBuilder.AppendLine("    <Grid.RowDefinitions>");
-        // Set up grid rows
-        for (int i = 0; i < row / columnCount + 1; i++)
+        if (IsUseGrid)
         {
-            xamlBuilder.AppendLine($"        <RowDefinition Height=\"Auto\"/>");
+            xamlBuilder.AppendLine("    <Grid.RowDefinitions>");
+            // Set up grid rows
+            for (int i = 0; i < row / columnCount + 1; i++)
+            {
+                xamlBuilder.AppendLine($"        <RowDefinition Height=\"Auto\"/>");
+            }
+            xamlBuilder.AppendLine("    </Grid.RowDefinitions>");
+            // Set up grid columns
+            xamlBuilder.AppendLine("    <Grid.ColumnDefinitions>");
+            for (int i = 0; i < columnCount; i++)
+            {
+                xamlBuilder.AppendLine("        <ColumnDefinition Width=\"*\"/>");
+            }
+            xamlBuilder.AppendLine("    </Grid.ColumnDefinitions>");
         }
-        xamlBuilder.AppendLine("    </Grid.RowDefinitions>");
-        // Set up grid columns
-        xamlBuilder.AppendLine("    <Grid.ColumnDefinitions>");
-        for (int i = 0; i < columnCount; i++)
-        {
-            xamlBuilder.AppendLine("        <ColumnDefinition Width=\"*\"/>");
-        }
-        xamlBuilder.AppendLine("    </Grid.ColumnDefinitions>");
-        xamlBuilder.AppendLine("</Grid>");
+        xamlBuilder.AppendLine(IsUseGrid ? "</Grid>" : "</StackPanel>");
         return xamlBuilder.ToString();
     }
+
+    private string GetMode()
+    {
+        if (IsUseTwoWayBinding)
+        {
+            return "Mode=TwoWay";
+        }
+        return "Mode=OneWay";
+    }
+    private string GetBinding()
+    {
+        if (IsUseXBind)
+        {
+            return "x:Bind";
+        }
+        return "Binding";
+    }
+    private string GetRowAndColumn(int row, int columnCount)
+    {
+        if (IsUseGrid)
+        {
+            return $"Grid.Column=\"{row % columnCount}\" Grid.Row=\"{row / columnCount}\"";
+        }
+        return string.Empty;
+    }
+    private string GetPlaceholderText(string property)
+    {
+        return forUWP || ForMAUI ? $"PlaceholderText=\"{property}\"" : string.Empty;
+    }
+    private string GetStyle(string style)
+    {
+        if (string.IsNullOrWhiteSpace(style))
+        {
+            return string.Empty;
+        }
+        return $"Style=\"{{StaticResource {style}}}\"";
+
+    }
+    private string AddMargin()
+    {
+        if (string.IsNullOrWhiteSpace(Margin))
+        {
+            return string.Empty;
+        }
+        return $"Margin=\"{Margin}\"";
+    }
+    private void GenerateControlText(int columnCount, StringBuilder xamlBuilder, int row, Property property)
+    {
+        switch (property.Type.ToLower())
+        {
+            case "string":
+            case "int":
+            case "double":
+            case "float":
+            case "decimal":
+                if (IsUseTextBlock)
+                    xamlBuilder.AppendLine($"    <TextBlock Text=\"{{{GetBinding()} {property.Name}}}\"  Grid.Column=\"{row % columnCount}\" Grid.Row=\"{row / columnCount}\" {GetStyle(StyleForTextBlock)} {AddMargin()} />");
+                else
+                    xamlBuilder.AppendLine($"    <TextBox {GetPlaceholderText(property.Name)}  Text=\"{{{GetBinding()} {property.Name}, {GetMode()}}}\" {GetRowAndColumn(row, columnCount)}  {GetStyle(StyleForTextBox)} {AddMargin()} />");
+                break;
+            case "datetime":
+            case "dateitmeOffset":
+                xamlBuilder.AppendLine($"    <DatePicker SelectedDate=\"{{{GetBinding()} {property.Name}, {GetMode()}}}\" {GetRowAndColumn(row, columnCount)} {GetStyle(StyleForDateTime)} {AddMargin()} />");
+                break;
+            case "bool":
+                xamlBuilder.AppendLine($"    <CheckBox  Content=\"{property.Name}\" IsChecked=\"{{{GetBinding()} {property.Name},  {GetMode()} }}\" {GetRowAndColumn(row, columnCount)} {GetStyle(StyleForCheckBox)} {AddMargin()} />");
+                break;
+            case "guid":
+                xamlBuilder.AppendLine($"    <ComboBox {GetPlaceholderText(property.Name)} SelectedValue=\"{{{GetBinding()} {property.Name}, {GetMode()} }}\" {GetRowAndColumn(row, columnCount)} {GetStyle(StyleForCombo)} {AddMargin()} />");
+                break;
+            default:
+                // For other types, just display the type name
+                xamlBuilder.AppendLine($"    <TextBlock Text=\"{{{GetBinding()} {property.Name}}}\"  Grid.Column=\"{row % columnCount}\" Grid.Row=\"{row / columnCount}\"  {GetStyle(StyleForTextBlock)} {AddMargin()} />");
+                break;
+        }
+    }
+
     public ICommand GoToSecond { get; }
 
     private async Task GoToSecondView()

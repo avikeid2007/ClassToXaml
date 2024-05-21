@@ -1,19 +1,20 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 
 <Package
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
-  IgnorableNamespaces="uap rescap">
+  xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
+  IgnorableNamespaces="uap rescap mp">
 
   <Identity
-    Name="ClassToXaml"
-    Publisher="O=ClassToXaml"
+    Name="34488AvnishKumar.2962505C8BD3"
+    Publisher="CN=1494B4FB-4349-4083-8AFA-16D2A64B8D99"
     Version="1.0.0.0" />
 
   <Properties>
-    <DisplayName>ClassToXaml</DisplayName>
-    <PublisherDisplayName>ClassToXaml</PublisherDisplayName>
+    <DisplayName>Class To XAML</DisplayName>
+    <PublisherDisplayName>Avnish Kumar</PublisherDisplayName>
   </Properties>
 
   <Dependencies>
@@ -30,9 +31,10 @@
       Executable="$targetnametoken$.exe"
       EntryPoint="$targetentrypoint$">
       <uap:VisualElements
-        DisplayName="ClassToXaml"
+        DisplayName="Class To XAML"
         Description="ClassToXaml">
         <uap:SplashScreen />
+        <uap:DefaultTile/>
       </uap:VisualElements>
     </Application>
   </Applications>
@@ -40,4 +42,6 @@
   <Capabilities>
     <rescap:Capability Name="runFullTrust" />
   </Capabilities>
+
+ 
 </Package>

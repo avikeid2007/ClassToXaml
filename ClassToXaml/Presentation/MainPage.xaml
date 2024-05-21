@@ -18,31 +18,45 @@
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="400" />
         </Grid.ColumnDefinitions>
-        <utu:NavigationBar Grid.ColumnSpan="2" Content="Class To XAML(UWP, WinUI, WPF, MAUI)" />
+        <utu:NavigationBar
+            Grid.ColumnSpan="2"
+            Margin="0,0,0,4"
+            Content="Class To XAML(UWP, WinUI, WPF, MAUI)" />
         <TextBox
             Grid.Row="1"
             Margin="8,4"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             AcceptsReturn="True"
-            PlaceholderText="CLass Text"
+            PlaceholderText="ClassText"
             Text="{x:Bind VM.InputText, Mode=TwoWay}" />
         <Grid
             Grid.Row="1"
+            Grid.RowSpan="3"
             Grid.Column="1"
             Margin="8,4"
             Padding="8"
             VerticalAlignment="Top"
             BorderBrush="#ccc"
             BorderThickness="1"
-            CornerRadius="8">
+            CornerRadius="8"
+            RowSpacing="6">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -66,24 +80,24 @@
 
             <RadioButton
                 Grid.Row="1"
-                Content="UWP/Uno-Platform"
+                Content="UWP/Uno-Platform/WinUI"
                 FontSize="16"
                 GroupName="RadioButtonDemo_Material_1a"
-                IsChecked="True"
+                IsChecked="{x:Bind VM.ForUWP, Mode=TwoWay}"
                 Style="{StaticResource RadioButtonStyle}" />
             <RadioButton
                 Grid.Row="2"
                 Content="WPF"
                 FontSize="16"
                 GroupName="RadioButtonDemo_Material_1a"
-                IsChecked="False"
+                IsChecked="{x:Bind VM.ForWPF, Mode=TwoWay}"
                 Style="{StaticResource RadioButtonStyle}" />
             <RadioButton
                 Grid.Row="3"
                 Content="Xamarin/ MAUI"
                 FontSize="16"
                 GroupName="RadioButtonDemo_Material_1a"
-                IsChecked="True"
+                IsChecked="{x:Bind VM.ForMAUI, Mode=TwoWay}"
                 Style="{StaticResource RadioButtonStyle}" />
             <utu:Divider
                 Grid.Row="4"
@@ -109,33 +123,29 @@
                 Grid.Row="6"
                 Grid.Column="1"
                 Margin="8,0,0,0"
-                IsOn="{Binding IsUseGrid, Mode=TwoWay}"
+                IsOn="{x:Bind VM.IsUseGrid, Mode=TwoWay}"
                 OffContent=""
                 OnContent="" />
-            <TextBox
-                Grid.Row="7"
-                Grid.ColumnSpan="2" Text="{Binding  }"
-                IsEnabled="{Binding ElementName=useGrid, Path=IsOn}"
-                PlaceholderText="No of column" />
+
             <TextBlock
-                Grid.Row="8"
+                Grid.Row="7"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Center"
                 FontSize="16"
                 FontWeight="Medium"
-                Text="Use TextBox" />
+                Text="Use Textblock instead of Textbox" />
 
 
             <ToggleSwitch
-                Grid.Row="8"
+                Grid.Row="7"
                 Grid.Column="1"
                 Margin="8,0,0,0"
-                IsOn="{Binding IsUseTextBox, Mode=TwoWay}"
+                IsOn="{x:Bind VM.IsUseTextBlock, Mode=TwoWay}"
                 OffContent=""
                 OnContent="" />
 
             <TextBlock
-                Grid.Row="9"
+                Grid.Row="8"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Center"
                 FontSize="16"
@@ -144,15 +154,14 @@
 
 
             <ToggleSwitch
-                Grid.Row="9"
+                Grid.Row="8"
                 Grid.Column="1"
                 Margin="8,0,0,0"
-                IsEnabled="{Binding IsUseTextBox}"
-                IsOn="{Binding IsUseTwoWayBinding, Mode=TwoWay}"
+                IsOn="{x:Bind VM.IsUseTwoWayBinding, Mode=TwoWay}"
                 OffContent=""
                 OnContent="" />
             <TextBlock
-                Grid.Row="10"
+                Grid.Row="9"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Center"
                 FontSize="16"
@@ -161,14 +170,56 @@
 
 
             <ToggleSwitch
-                Grid.Row="10"
+                Grid.Row="9"
                 Grid.Column="1"
                 Margin="8,0,0,0"
-                IsEnabled="{Binding IsUWP}"
-                IsOn="{Binding IsUseXBind, Mode=TwoWay}"
+                IsEnabled="{x:Bind VM.ForUWP}"
+                IsOn="{x:Bind VM.IsUseXBind, Mode=TwoWay}"
                 OffContent=""
                 OnContent="" />
-            <TextBlock
+            <utu:Divider
+                Grid.Row="10"
+                Grid.ColumnSpan="2"
+                Margin="0,8"
+                Style="{StaticResource DividerStyle}" />
+            <TextBox
+                Grid.Row="11"
+                Grid.ColumnSpan="2"
+                IsEnabled="{Binding ElementName=useGrid, Path=IsOn}"
+                PlaceholderText="No of column for Grid"
+                Text="{x:Bind VM.NoOfColumn, Mode=TwoWay}" />
+
+            <TextBox
+                Grid.Row="12"
+                Grid.ColumnSpan="2"
+                PlaceholderText="Margin"
+                Text="{x:Bind VM.Margin, Mode=TwoWay}" />
+            <TextBox
+                Grid.Row="13"
+                Grid.ColumnSpan="2"
+                PlaceholderText="Style for TextBox"
+                Text="{x:Bind VM.StyleForTextBox, Mode=TwoWay}" />
+            <TextBox
+                Grid.Row="14"
+                Grid.ColumnSpan="2"
+                PlaceholderText="Style For TextBlock"
+                Text="{x:Bind VM.StyleForTextBlock, Mode=TwoWay}" />
+            <TextBox
+                Grid.Row="15"
+                Grid.ColumnSpan="2"
+                PlaceholderText="Style For CheckBox"
+                Text="{x:Bind VM.StyleForCheckBox, Mode=TwoWay}" />
+            <TextBox
+                Grid.Row="16"
+                Grid.ColumnSpan="2"
+                PlaceholderText="Style For DateTime Picker"
+                Text="{x:Bind VM.StyleForDateTime, Mode=TwoWay}" />
+            <TextBox
+                Grid.Row="17"
+                Grid.ColumnSpan="2"
+                PlaceholderText="Style For Combo Box"
+                Text="{x:Bind VM.StyleForCombo, Mode=TwoWay}" />
+            <!--<TextBlock
                 Grid.Row="11"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Center"
@@ -185,7 +236,7 @@
                 Command="{x:Bind VM.GoToSecond}"
                 Style="{StaticResource IconButtonStyle}">
                 <SymbolIcon Symbol="More" />
-            </Button>
+            </Button>-->
             <!--<TextBlock
         Grid.Row="5"
         HorizontalAlignment="Stretch"
@@ -206,7 +257,7 @@
         OnContent="" />-->
 
         </Grid>
-        <Grid Grid.Row="2" Grid.ColumnSpan="2">
+        <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
@@ -247,7 +298,6 @@
         </Grid>
         <TextBox
             Grid.Row="3"
-            Grid.ColumnSpan="2"
             Margin="8,4"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
