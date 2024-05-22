@@ -1,9 +1,10 @@
-using System.Reflection;
 using System.Text;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+
+using Windows.ApplicationModel.DataTransfer;
 
 namespace ClassToXaml.Presentation;
 
@@ -111,91 +112,19 @@ public partial class MainViewModel : ObservableObject
     }
     private void OnCopyCommandExecuted()
     {
-        throw new NotImplementedException();
+        if (string.IsNullOrWhiteSpace(OutputText))
+        {
+            return;
+        }
+        var dataPackage = new DataPackage();
+        dataPackage.SetText(OutputText);
+        Clipboard.SetContent(dataPackage);
     }
     private void OnClearCommandExecuted()
     {
-        throw new NotImplementedException();
+        InputText = string.Empty;
+        OutputText = string.Empty;
     }
-    //public async Task<Type> GenerateDynamicType(string classText)
-    //{
-    //    try
-    //    {
-    //        //classText = classText.Replace(" DateTime ", " System.DateTime ");
-    //        //classText = classText.Replace(" DateTimeOffset ", " System.DateTimeOffset ");
-    //        ////  var usings = new List<string> { "System", "System.Linq", "System.Collections.Generic" };
-
-    //        ////  SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(classText);
-    //        //SyntaxTree tree = CSharpSyntaxTree.ParseText(classText);
-    //        //CompilationUnitSyntax root = tree.GetCompilationUnitRoot();
-
-    //        //// Find the first member declaration
-    //        //MemberDeclarationSyntax member = root.Members.FirstOrDefault();
-    //        var item = GetPublicProperty(classText);
-    //        return null;
-    //        //    List<MetadataReference> references = new List<MetadataReference>();
-    //        //    if (OperatingSystem.IsBrowser())
-    //        //    {
-    //        //        var meta = await GetAssemblyMetadataReference(typeof(object).Assembly);
-    //        //        references.Add(meta);
-    //        //    }
-    //        //    else
-    //        //    {
-    //        //        var location = typeof(object).Assembly.Location;
-
-    //        //        references.Add(MetadataReference.CreateFromFile(location));
-    //        //        references.Add(MetadataReference.CreateFromFile(Assembly.Load("System.Collections.Generic").Location)); ;
-    //        //    }
-    //        //    CSharpCompilation compilation = CSharpCompilation.Create($"ClassToXaml.Presentation.{Guid.NewGuid()}")
-    //        //.WithOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, concurrentBuild: false))
-    //        //.AddReferences(references)
-    //        //.AddSyntaxTrees(syntaxTree);
-    //        //    // Emit assembly to memory stream
-    //        //    using (var ms = new System.IO.MemoryStream())
-    //        //    {
-    //        //        EmitResult emitResult = compilation.Emit(ms);
-    //        //        if (!emitResult.Success)
-    //        //        {
-    //        //            var failures = emitResult.Diagnostics.Where(diagnostic => diagnostic.IsWarningAsError || diagnostic.Severity == DiagnosticSeverity.Error);
-    //        //            throw new InvalidOperationException($"Failed to generate dynamic type.\n{string.Join('\n', failures.Select(x => x.GetMessage()))}");
-    //        //        }
-    //        //        Assembly assembly = Assembly.Load(ms.ToArray());
-    //        //        return assembly.GetTypes().First();
-    //        //    }
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        await _navigator.ShowMessageDialogAsync(this, title: "Fail to convert", content: ex.Message);
-    //        return null;
-    //    }
-    //}
-    private async Task<MetadataReference?> GetAssemblyMetadataReference(Assembly assembly)
-    {
-        MetadataReference? ret = null;
-        // var assemblyName = assembly.GetName().Name;
-        var assemblyUrl = $"{assembly.GetName().Name}.dll";
-        try
-        {
-            var client = new HttpClient();
-            client.BaseAddress = new Uri("http://localhost:5001/");
-            var tmp = await client.GetAsync(assemblyUrl);
-            if (tmp.IsSuccessStatusCode)
-            {
-                var bytes = await tmp.Content.ReadAsByteArrayAsync();
-                string filePath = "Avi." + assemblyUrl;
-                // Write the byte array to the file
-                File.WriteAllBytes(filePath, bytes);
-                var path = Path.GetFullPath(filePath);
-                ret = MetadataReference.CreateFromFile(path);
-            }
-        }
-        catch (Exception ex)
-        {
-
-        }
-        return ret;
-    }
-
     public void GenerateXamlForClass()
     {
         OutputText = GenerateXamlForClass(InputText, NoOfColumn);
@@ -212,7 +141,7 @@ public partial class MainViewModel : ObservableObject
             return string.Empty;
         }
         StringBuilder xamlBuilder = new();
-        xamlBuilder.AppendLine(IsUseGrid ? "<Grid>" : "<StackPanel>");
+        xamlBuilder.AppendLine(IsUseGrid ? "<Grid>" : $"<{GetControl("StackPanel")}>");
         int row = 0;
         foreach (var property in properties)
         {
@@ -236,7 +165,7 @@ public partial class MainViewModel : ObservableObject
             }
             xamlBuilder.AppendLine("    </Grid.ColumnDefinitions>");
         }
-        xamlBuilder.AppendLine(IsUseGrid ? "</Grid>" : "</StackPanel>");
+        xamlBuilder.AppendLine(IsUseGrid ? "</Grid>" : $"</{GetControl("StackPanel")}>");
         return xamlBuilder.ToString();
     }
 
@@ -266,7 +195,18 @@ public partial class MainViewModel : ObservableObject
     }
     private string GetPlaceholderText(string property)
     {
-        return forUWP || ForMAUI ? $"PlaceholderText=\"{property}\"" : string.Empty;
+        if (ForUWP)
+        {
+            return $"PlaceholderText=\"{property}\"";
+        }
+        else if (ForMAUI)
+        {
+            return $"Placeholder=\"{property}\"";
+        }
+        else
+        {
+            return string.Empty;
+        }
     }
     private string GetStyle(string style)
     {
@@ -285,6 +225,22 @@ public partial class MainViewModel : ObservableObject
         }
         return $"Margin=\"{Margin}\"";
     }
+    Dictionary<string, string> typeMap = new(StringComparer.OrdinalIgnoreCase)
+       {
+           { "TextBlock", "Label" },
+           { "TextBox", "Entry" },
+           { "ComboBox", "Picker" },
+           { "StackPanel", "StackLayout" }
+       };
+    private string GetControl(string type)
+    {
+        if (ForMAUI && typeMap.ContainsKey(type))
+        {
+            return typeMap[type];
+        }
+        return type;
+
+    }
     private void GenerateControlText(int columnCount, StringBuilder xamlBuilder, int row, Property property)
     {
         switch (property.Type.ToLower())
@@ -295,23 +251,23 @@ public partial class MainViewModel : ObservableObject
             case "float":
             case "decimal":
                 if (IsUseTextBlock)
-                    xamlBuilder.AppendLine($"    <TextBlock Text=\"{{{GetBinding()} {property.Name}}}\"  Grid.Column=\"{row % columnCount}\" Grid.Row=\"{row / columnCount}\" {GetStyle(StyleForTextBlock)} {AddMargin()} />");
+                    xamlBuilder.AppendLine($"    <{GetControl("TextBlock")} Text=\"{{{GetBinding()} {property.Name}}}\"  Grid.Column=\"{row % columnCount}\" Grid.Row=\"{row / columnCount}\" {GetStyle(StyleForTextBlock)} {AddMargin()} />");
                 else
-                    xamlBuilder.AppendLine($"    <TextBox {GetPlaceholderText(property.Name)}  Text=\"{{{GetBinding()} {property.Name}, {GetMode()}}}\" {GetRowAndColumn(row, columnCount)}  {GetStyle(StyleForTextBox)} {AddMargin()} />");
+                    xamlBuilder.AppendLine($"    <{GetControl("TextBox")} {GetPlaceholderText(property.Name)}  Text=\"{{{GetBinding()} {property.Name}, {GetMode()}}}\" {GetRowAndColumn(row, columnCount)}  {GetStyle(StyleForTextBox)} {AddMargin()} />");
                 break;
             case "datetime":
-            case "dateitmeOffset":
+            case "datetimeoffset":
                 xamlBuilder.AppendLine($"    <DatePicker SelectedDate=\"{{{GetBinding()} {property.Name}, {GetMode()}}}\" {GetRowAndColumn(row, columnCount)} {GetStyle(StyleForDateTime)} {AddMargin()} />");
                 break;
             case "bool":
                 xamlBuilder.AppendLine($"    <CheckBox  Content=\"{property.Name}\" IsChecked=\"{{{GetBinding()} {property.Name},  {GetMode()} }}\" {GetRowAndColumn(row, columnCount)} {GetStyle(StyleForCheckBox)} {AddMargin()} />");
                 break;
             case "guid":
-                xamlBuilder.AppendLine($"    <ComboBox {GetPlaceholderText(property.Name)} SelectedValue=\"{{{GetBinding()} {property.Name}, {GetMode()} }}\" {GetRowAndColumn(row, columnCount)} {GetStyle(StyleForCombo)} {AddMargin()} />");
+                xamlBuilder.AppendLine($"    <{GetControl("ComboBox")} {GetPlaceholderText(property.Name)} SelectedValue=\"{{{GetBinding()} {property.Name}, {GetMode()} }}\" {GetRowAndColumn(row, columnCount)} {GetStyle(StyleForCombo)} {AddMargin()} />");
                 break;
             default:
                 // For other types, just display the type name
-                xamlBuilder.AppendLine($"    <TextBlock Text=\"{{{GetBinding()} {property.Name}}}\"  Grid.Column=\"{row % columnCount}\" Grid.Row=\"{row / columnCount}\"  {GetStyle(StyleForTextBlock)} {AddMargin()} />");
+                xamlBuilder.AppendLine($"    <{GetControl("TextBlock")} Text=\"{{{GetBinding()} {property.Name}}}\"  Grid.Column=\"{row % columnCount}\" Grid.Row=\"{row / columnCount}\"  {GetStyle(StyleForTextBlock)} {AddMargin()} />");
                 break;
         }
     }

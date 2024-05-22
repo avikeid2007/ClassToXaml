@@ -24,6 +24,18 @@
             Grid.ColumnSpan="2"
             Margin="0,0,0,4"
             Content="Class To XAML(UWP, WinUI, WPF, MAUI)" />
+        <ToggleSwitch
+            x:Name="DarkModeToggle"
+            Grid.Column="1"
+            HorizontalAlignment="Right"
+            Toggled="OnDarkModeToggleToggled">
+            <ToggleSwitch.OffContent>
+                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE708;" />
+            </ToggleSwitch.OffContent>
+            <ToggleSwitch.OnContent>
+                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE706;" />
+            </ToggleSwitch.OnContent>
+        </ToggleSwitch>
         <TextBox
             Grid.Row="1"
             Margin="8,4"
@@ -38,7 +50,7 @@
             Grid.Column="1"
             Margin="8,4"
             Padding="8"
-            VerticalAlignment="Top"
+            VerticalAlignment="Stretch"
             BorderBrush="#ccc"
             BorderThickness="1"
             CornerRadius="8"
