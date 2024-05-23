@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.RegularExpressions;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -19,9 +20,7 @@ public partial class MainViewModel : ObservableObject
     public MainViewModel(INavigator navigator)
     {
         _navigator = navigator;
-        // Title = "Main";
-        GoToSecond = new AsyncRelayCommand(GoToSecondView);
-        NoOfColumn = 1;
+        NoOfColumn = 2;
         IsUseGrid = true;
         IsUseTextBlock = false;
         IsUseTwoWayBinding = true;
@@ -60,6 +59,15 @@ public partial class MainViewModel : ObservableObject
     private string? styleForDateTime;
     [ObservableProperty]
     private string? styleForCombo;
+    public string placeHolder => @"public class Name
+{
+    public string maiden { get; set; }
+    public string suffix { get; set; }
+    public string givenName { get; set; }
+    public string middleName { get; set; }
+    public string surname { get; set; }
+
+}";
     public RelayCommand GenerateCommand => new RelayCommand(OnGenerateCommandExecuted);
     public RelayCommand CopyCommand => new RelayCommand(OnCopyCommandExecuted);
     public RelayCommand ClearCommand => new RelayCommand(OnClearCommandExecuted);
@@ -129,12 +137,79 @@ public partial class MainViewModel : ObservableObject
     {
         OutputText = GenerateXamlForClass(InputText, NoOfColumn);
     }
+    private static string ExtractClassName(string classText)
+    {
+        // Regular expression to extract class name
+        string classNamePattern = @"public\s+class\s+(\w+)";
+        var classNameMatch = Regex.Match(classText, classNamePattern);
+
+        if (classNameMatch.Success)
+        {
+            return classNameMatch.Groups[1].Value;
+        }
+
+        return string.Empty;
+    }
+    private static List<string> ExtractClassDefinitions(string fileContent)
+    {
+        List<string> classDefinitions = new List<string>();
+        string classPattern = @"public\s+class\s+\w+\s*{";
+        MatchCollection matches = Regex.Matches(fileContent, classPattern);
+        foreach (Match match in matches)
+        {
+            int startIndex = match.Index;
+            int openBraces = 0;
+            int endIndex = startIndex;
+            for (int i = startIndex; i < fileContent.Length; i++)
+            {
+                if (fileContent[i] == '{')
+                {
+                    openBraces++;
+                }
+                else if (fileContent[i] == '}')
+                {
+                    openBraces--;
+                    if (openBraces == 0)
+                    {
+                        endIndex = i;
+                        break;
+                    }
+                }
+            }
+
+            string classDefinition = fileContent.Substring(startIndex, endIndex - startIndex + 1);
+            classDefinitions.Add(classDefinition);
+        }
+
+        return classDefinitions;
+    }
     public string GenerateXamlForClass(string classText, int columnCount)
     {
         if (classText == null)
         {
             return string.Empty;
         }
+        StringBuilder xamlText = new();
+        string classPattern = @"public\s+class\s+\w+\s*{";
+        var classMatches = Regex.Matches(classText, classPattern);
+        if (classMatches.Count > 1)
+        {
+            List<string> classDefinitions = ExtractClassDefinitions(classText);
+            foreach (string text in classDefinitions)
+            {
+                xamlText.AppendLine($"  <!--///////////////XAML for class {ExtractClassName(text)}/////////////-->");
+                xamlText.AppendLine(GenerateXaml(text, columnCount));
+            }
+        }
+        else if (classMatches.Count == 1)
+        {
+            return GenerateXaml(classText, columnCount);
+        }
+        return xamlText.ToString();
+    }
+
+    private string GenerateXaml(string classText, int columnCount)
+    {
         var properties = GetPublicProperty(classText);
         if (properties == null || !properties.Any())
         {
@@ -225,7 +300,7 @@ public partial class MainViewModel : ObservableObject
         }
         return $"Margin=\"{Margin}\"";
     }
-    Dictionary<string, string> typeMap = new(StringComparer.OrdinalIgnoreCase)
+    private Dictionary<string, string> typeMap = new(StringComparer.OrdinalIgnoreCase)
        {
            { "TextBlock", "Label" },
            { "TextBox", "Entry" },
@@ -272,11 +347,7 @@ public partial class MainViewModel : ObservableObject
         }
     }
 
-    public ICommand GoToSecond { get; }
-
-    private async Task GoToSecondView()
-    {
-        await _navigator.NavigateViewModelAsync<SecondViewModel>(this, data: new Entity(Name!));
-    }
+    public ICommand GoToSecond => new AsyncRelayCommand(async () => await _navigator.NavigateViewModelAsync<SecondViewModel>(this));
+    public ICommand ExampleCommand => new RelayCommand(() => InputText = placeHolder);
 
 }
