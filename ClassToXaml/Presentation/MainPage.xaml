@@ -24,26 +24,44 @@
             Grid.ColumnSpan="2"
             Margin="0,0,0,4"
             Content="Class To XAML(UWP, WinUI, WPF, MAUI)" />
-        <ToggleSwitch
-            x:Name="DarkModeToggle"
+        <StackPanel
             Grid.Column="1"
             HorizontalAlignment="Right"
-            Toggled="OnDarkModeToggleToggled">
-            <ToggleSwitch.OffContent>
-                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE708;" />
-            </ToggleSwitch.OffContent>
-            <ToggleSwitch.OnContent>
-                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE706;" />
-            </ToggleSwitch.OnContent>
-        </ToggleSwitch>
+            Orientation="Horizontal">
+            <ToggleSwitch x:Name="DarkModeToggle" Toggled="OnDarkModeToggleToggled">
+                <ToggleSwitch.OffContent>
+                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE708;" />
+                </ToggleSwitch.OffContent>
+                <ToggleSwitch.OnContent>
+                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE706;" />
+                </ToggleSwitch.OnContent>
+            </ToggleSwitch>
+            <AppBarButton
+                Command="{x:Bind VM.GoToSecond}"
+                Icon="Setting"
+                LabelPosition="Collapsed" />
+        </StackPanel>
         <TextBox
             Grid.Row="1"
             Margin="8,4"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             AcceptsReturn="True"
-            PlaceholderText="ClassText"
+            Header="Class Text( Only Public properties will be use for XAML)"
+            PlaceholderText="Class Text( Only Public properties will be use for XAML)"
             Text="{x:Bind VM.InputText, Mode=TwoWay}" />
+        <Button
+            Grid.Row="1"
+            Margin="8,10"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Command="{x:Bind VM.ExampleCommand}"
+            Content="Example"
+            Style="{StaticResource SecondarySmallFabStyle}">
+            <um:ControlExtensions.Icon>
+                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE943;" />
+            </um:ControlExtensions.Icon>
+        </Button>
         <Grid
             Grid.Row="1"
             Grid.RowSpan="3"
@@ -281,7 +299,11 @@
                 HorizontalAlignment="Stretch"
                 Command="{x:Bind VM.GenerateCommand}"
                 Content="Generate XAML"
-                CornerRadius="4" />
+                CornerRadius="4">
+                <um:ControlExtensions.Icon>
+                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xF133;" />
+                </um:ControlExtensions.Icon>
+            </Button>
             <Button
                 Grid.Column="1"
                 Height="60"
@@ -289,7 +311,11 @@
                 HorizontalAlignment="Stretch"
                 Command="{x:Bind VM.CopyCommand}"
                 Content="Copy"
-                CornerRadius="4" />
+                CornerRadius="4">
+                <um:ControlExtensions.Icon>
+                    <SymbolIcon Symbol="Copy" />
+                </um:ControlExtensions.Icon>
+            </Button>
             <!--<Button
                 Grid.Column="2"
                 Height="60"
@@ -305,7 +331,11 @@
                 HorizontalAlignment="Stretch"
                 Command="{x:Bind VM.ClearCommand}"
                 Content="Clear"
-                CornerRadius="4" />
+                CornerRadius="4">
+                <um:ControlExtensions.Icon>
+                    <SymbolIcon Symbol="Delete" />
+                </um:ControlExtensions.Icon>
+            </Button>
 
         </Grid>
         <TextBox
