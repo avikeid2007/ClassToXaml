@@ -64,22 +64,22 @@ public partial class MainViewModel : ObservableObject
     private bool isPreviewAvailable;
     private string placeHolder => @"public class Name
 {
-    public string maiden { get; set; }
-    public string suffix { get; set; }
-    public string givenName { get; set; }
-    public string middleName { get; set; }
-    public string surname { get; set; }
-
+    public string FirstName { get; set; }
+    public string MiddleName { get; set; }
+    public string Surname { get; set; }
+    public DateTime BirthDate { get; set; }
+    public Guid Id { get; set; }
+    public bool IsMarried { get; set; }
 }";
     private string placeHolderJson => @"{""maiden"":null,""suffix"":null,""givenName"":null,""middleName"":null,""surname"":null}";
     public string placeHolderMultiClass => @"public class Name
 {
-    public string maiden { get; set; }
-    public string suffix { get; set; }
-    public string givenName { get; set; }
-    public string middleName { get; set; }
-    public string surname { get; set; }
-
+    public string FirstName { get; set; }
+    public string MiddleName { get; set; }
+    public string Surname { get; set; }
+    public DateTime BirthDate { get; set; }
+    public Guid Id { get; set; }
+    public bool IsMarried { get; set; }
 }
 
 public class Address
@@ -91,8 +91,6 @@ public class Address
     public string district { get; set; }
     public string county { get; set; }
     public string country { get; set; }
-    public int latitude { get; set; }
-    public int longitude { get; set; }
 }";
 
 
@@ -165,7 +163,7 @@ public class Address
     public void GenerateXamlForClass()
     {
         OutputText = GenerateXamlForClass(InputText, NoOfColumn);
-        IsPreviewAvailable = !string.IsNullOrWhiteSpace(OutputText);
+        IsPreviewAvailable = !string.IsNullOrWhiteSpace(OutputText) && !ForMAUI;
     }
     private static string ExtractClassName(string classText)
     {
