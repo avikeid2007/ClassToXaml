@@ -36,7 +36,8 @@ public class App : Application
         views.Register(
             new ViewMap(ViewModel: typeof(ShellViewModel)),
             new ViewMap<MainPage, MainViewModel>(),
-            new ViewMap<SecondPage, SecondViewModel>()
+            new ViewMap<SecondPage, SecondViewModel>(),
+             new DataViewMap<PreviewPage, PreviewViewModel, string>()
         );
 
         routes.Register(
@@ -45,6 +46,7 @@ public class App : Application
                 {
                     new RouteMap("Main", View: views.FindByViewModel<MainViewModel>()),
                     new RouteMap("Second", View: views.FindByViewModel<SecondViewModel>()),
+                     new RouteMap("Preview", View: views.FindByViewModel<PreviewViewModel>()),
                 }
             )
         );

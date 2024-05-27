@@ -59,7 +59,10 @@ public partial class MainViewModel : ObservableObject
     private string? styleForDateTime;
     [ObservableProperty]
     private string? styleForCombo;
-    public string placeHolder => @"public class Name
+    private bool isPreview;
+    [ObservableProperty]
+    private bool isPreviewAvailable;
+    private string placeHolder => @"public class Name
 {
     public string maiden { get; set; }
     public string suffix { get; set; }
@@ -68,6 +71,31 @@ public partial class MainViewModel : ObservableObject
     public string surname { get; set; }
 
 }";
+    private string placeHolderJson => @"{""maiden"":null,""suffix"":null,""givenName"":null,""middleName"":null,""surname"":null}";
+    public string placeHolderMultiClass => @"public class Name
+{
+    public string maiden { get; set; }
+    public string suffix { get; set; }
+    public string givenName { get; set; }
+    public string middleName { get; set; }
+    public string surname { get; set; }
+
+}
+
+public class Address
+{
+    public string street { get; set; }
+    public string city { get; set; }
+    public string state { get; set; }
+    public string postalCode { get; set; }
+    public string district { get; set; }
+    public string county { get; set; }
+    public string country { get; set; }
+    public int latitude { get; set; }
+    public int longitude { get; set; }
+}";
+
+
     public RelayCommand GenerateCommand => new RelayCommand(OnGenerateCommandExecuted);
     public RelayCommand CopyCommand => new RelayCommand(OnCopyCommandExecuted);
     public RelayCommand ClearCommand => new RelayCommand(OnClearCommandExecuted);
@@ -116,6 +144,7 @@ public partial class MainViewModel : ObservableObject
     }
     private void OnGenerateCommandExecuted()
     {
+        isPreview = false;
         GenerateXamlForClass();
     }
     private void OnCopyCommandExecuted()
@@ -136,6 +165,7 @@ public partial class MainViewModel : ObservableObject
     public void GenerateXamlForClass()
     {
         OutputText = GenerateXamlForClass(InputText, NoOfColumn);
+        IsPreviewAvailable = !string.IsNullOrWhiteSpace(OutputText);
     }
     private static string ExtractClassName(string classText)
     {
@@ -183,6 +213,7 @@ public partial class MainViewModel : ObservableObject
 
         return classDefinitions;
     }
+
     public string GenerateXamlForClass(string classText, int columnCount)
     {
         if (classText == null)
@@ -216,7 +247,7 @@ public partial class MainViewModel : ObservableObject
             return string.Empty;
         }
         StringBuilder xamlBuilder = new();
-        xamlBuilder.AppendLine(IsUseGrid ? "<Grid>" : $"<{GetControl("StackPanel")}>");
+        xamlBuilder.AppendLine(IsUseGrid ? $"<Grid {IsPreviewText()}>" : $"<{GetControl("StackPanel")} {IsPreviewText()}>");
         int row = 0;
         foreach (var property in properties)
         {
@@ -254,7 +285,7 @@ public partial class MainViewModel : ObservableObject
     }
     private string GetBinding()
     {
-        if (IsUseXBind)
+        if (IsUseXBind && !isPreview)
         {
             return "x:Bind";
         }
@@ -285,7 +316,7 @@ public partial class MainViewModel : ObservableObject
     }
     private string GetStyle(string style)
     {
-        if (string.IsNullOrWhiteSpace(style))
+        if (string.IsNullOrWhiteSpace(style) || isPreview)
         {
             return string.Empty;
         }
@@ -307,6 +338,8 @@ public partial class MainViewModel : ObservableObject
            { "ComboBox", "Picker" },
            { "StackPanel", "StackLayout" }
        };
+    private string? previewText;
+
     private string GetControl(string type)
     {
         if (ForMAUI && typeMap.ContainsKey(type))
@@ -314,7 +347,14 @@ public partial class MainViewModel : ObservableObject
             return typeMap[type];
         }
         return type;
-
+    }
+    private string IsPreviewText()
+    {
+        if (isPreview)
+        {
+            return "xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'";
+        }
+        return string.Empty;
     }
     private void GenerateControlText(int columnCount, StringBuilder xamlBuilder, int row, Property property)
     {
@@ -348,6 +388,31 @@ public partial class MainViewModel : ObservableObject
     }
 
     public ICommand GoToSecond => new AsyncRelayCommand(async () => await _navigator.NavigateViewModelAsync<SecondViewModel>(this));
-    public ICommand ExampleCommand => new RelayCommand(() => InputText = placeHolder);
+    public ICommand GoToPreview => new AsyncRelayCommand(OnPreviewCommandAsync);
+
+    private async Task OnPreviewCommandAsync()
+    {
+        isPreview = true;
+        previewText = GenerateXamlForClass(InputText, NoOfColumn);
+        if (!string.IsNullOrWhiteSpace(previewText))
+            await _navigator.NavigateViewModelAsync<PreviewViewModel>(this, data: previewText);
+        isPreview = false;
+    }
+
+    public ICommand ExampleCommand => new RelayCommand<string>((string x) =>
+    {
+
+        InputText = x switch
+        {
+            "0" => placeHolder,
+            "1" => placeHolderMultiClass,
+            "2" => placeHolderJson,
+            _ => placeHolder
+        };
+    });
+    //public ICommand WebCommand => new RelayCommand(async () => await Windows.System.Launcher.LaunchUriAsync(new Uri("http://classtoxaml.com")));
+    //public ICommand GithubCommand => new RelayCommand(async () => await Windows.System.Launcher.LaunchUriAsync(new Uri("https://github.com/avikeid2007/ClassToXaml")));
+    //public ICommand StoreCommand => new RelayCommand(async () => await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-windows-store://pdp/?ProductId=9PM6HNH3LNG1")));
+    //public ICommand RateCommand => new RelayCommand(async () => await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-windows-store://review/?ProductId=9PM6HNH3LNG1")));
 
 }

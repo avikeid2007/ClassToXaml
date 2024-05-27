@@ -43,4 +43,61 @@
   <ItemGroup>
     <UnoDspImportColors Include="Styles\*.zip" Generator="Xaml" />
   </ItemGroup>
+
+
+  <ItemGroup>
+    <None Remove="Assets\Icons\icons8-microsoft-store-40.svg" />
+    <None Remove="Assets\Icons\store.svg" />
+    <None Remove="Presentation\PreviewPage.xaml" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Presentation\PreviewPage.xaml" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <AdditionalFiles Remove="Presentation\PreviewPage.xaml" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Content Remove="Assets\Icons\icons8-microsoft-store-40.svg" />
+    <Content Remove="Assets\Icons\store.svg" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <UnoImage Update="Assets\Icons\icons8-microsoft-store-40.svg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </UnoImage>
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <UnoImage Update="Assets\Icons\store.svg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </UnoImage>
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <UnoImage Remove="Assets\Icons\icons8-microsoft-store-40.svg" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <UnoImage Remove="Assets\Icons\store.svg" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <UnoImage Remove="Assets\Icons\icons8-microsoft-store-40.svg" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <UnoImage Remove="Assets\Icons\store.svg" />
+  </ItemGroup>
 </Project>
