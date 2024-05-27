@@ -26,4 +26,25 @@ public sealed partial class MainPage : Page
             ser.SetThemeAsync(AppTheme.Dark);
         }
     }
+
+    private async void SymbolIcon_Tapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
+    {
+        await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-windows-store://review/?ProductId=9PM6HNH3LNG1"));
+    }
+
+    private async void Path_Tapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
+    {
+        await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-windows-store://pdp/?ProductId=9PM6HNH3LNG1"));
+    }
+
+    private async void SymbolIcon_Tapped_1(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
+    {
+        await Windows.System.Launcher.LaunchUriAsync(new Uri("http://classtoxaml.com"));
+
+    }
+
+    private async void Path_Tapped_1(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
+    {
+        await Windows.System.Launcher.LaunchUriAsync(new Uri("https://github.com/avikeid2007/ClassToXaml"));
+    }
 }
