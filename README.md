@@ -3,7 +3,7 @@
  <br/>
  <a href='//www.microsoft.com/store/apps/9PM6HNH3LNG1?cid=storebadge&ocid=badge'><img src='https://raw.githubusercontent.com/avikeid2007/WinDev-Utility/master/ScreenShots/store.png' alt='English badge' width="150" /></a>
   <br/>
- <a href='http://classtoxa/'>Web Version (WebAssembly)</a>
+ <a href='http://ClassToXaml.com'>Class to XAML- Web Version (WebAssembly) </a>
 # C# Class to XAML Converter
 
 The "C# Class to XAML Converter" is a comprehensive guide and toolkit designed to streamline the process of converting C# classes into XAML (Extensible Application Markup Language) for use in various frameworks, including UWP (Universal Windows Platform), WPF (Windows Presentation Foundation), .NET MAUI (Multi-platform App UI), Xamarin, WinUI, and the Uno Platform. This tool enables developers to effortlessly create and manage the user interface (UI) elements of their applications by bridging the gap between the back-end logic written in C# and the front-end design in XAML.
