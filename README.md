@@ -48,13 +48,14 @@ The "Class to XAML C# Application" toolkit is an indispensable resource for deve
 1. **Input C# Class**: Enter your C# class in the text box provided.
     ```csharp
     public class Name
-    {
-        public string maiden { get; set; }
-        public string suffix { get; set; }
-        public string givenName { get; set; }
-        public string middleName { get; set; }
-        public string surname { get; set; }
-    }
+   {
+    public string FirstName { get; set; }
+    public string MiddleName { get; set; }
+    public string Surname { get; set; }
+    public DateTime BirthDate { get; set; }
+    public Guid Id { get; set; }
+    public bool IsMarried { get; set; }
+   }
     ```
 2. **Select Project Type**: Choose the target project type from UWP/Uno-Platform/WinUI, WPF, or Xamarin/Maui.
 
@@ -76,13 +77,15 @@ The "Class to XAML C# Application" toolkit is an indispensable resource for deve
 
 Here's an example of the generated XAML for the provided class:
 ```xml
-<Grid>
-    <Entry Placeholder="maiden" Text="{Binding maiden, Mode=TwoWay}" Grid.Column="0" Grid.Row="0" />
-    <Entry Placeholder="suffix" Text="{Binding suffix, Mode=TwoWay}" Grid.Column="1" Grid.Row="0" />
-    <Entry Placeholder="givenName" Text="{Binding givenName, Mode=TwoWay}" Grid.Column="0" Grid.Row="1" />
-    <Entry Placeholder="middleName" Text="{Binding middleName, Mode=TwoWay}" Grid.Column="1" Grid.Row="1" />
-    <Entry Placeholder="surname" Text="{Binding surname, Mode=TwoWay}" Grid.Column="0" Grid.Row="2" />
+<Grid >
+    <TextBox PlaceholderText="FirstName"  Text="{Binding FirstName, Mode=TwoWay}" Grid.Column="0" Grid.Row="0"    />
+    <TextBox PlaceholderText="MiddleName"  Text="{Binding MiddleName, Mode=TwoWay}" Grid.Column="1" Grid.Row="0"    />
+    <TextBox PlaceholderText="Surname"  Text="{Binding Surname, Mode=TwoWay}" Grid.Column="0" Grid.Row="1"    />
+    <DatePicker SelectedDate="{Binding BirthDate, Mode=TwoWay}" Grid.Column="1" Grid.Row="1"   />
+    <ComboBox PlaceholderText="Id" SelectedValue="{Binding Id, Mode=TwoWay }" Grid.Column="0" Grid.Row="2"   />
+    <CheckBox  Content="IsMarried" IsChecked="{Binding IsMarried,  Mode=TwoWay }" Grid.Column="1" Grid.Row="2"   />
     <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
         <RowDefinition Height="Auto"/>
         <RowDefinition Height="Auto"/>
         <RowDefinition Height="Auto"/>
@@ -92,6 +95,7 @@ Here's an example of the generated XAML for the provided class:
         <ColumnDefinition Width="*"/>
     </Grid.ColumnDefinitions>
 </Grid>
+
  ```
 ## Roadmap
 
