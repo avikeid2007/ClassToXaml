@@ -27,7 +27,7 @@
         <utu:NavigationBar
             Grid.ColumnSpan="2"
             Margin="0,0,0,4"
-            Content="Class To XAML(UWP, WinUI, WPF, MAUI)" />
+            Content="Class To XAML(WinUI, WPF, Uno Platform, UWP, &amp; MAUI)" />
 
         <StackPanel
             Grid.Column="1"
@@ -145,26 +145,26 @@
                 Command="{x:Bind VM.ExampleCommand}"
                 CommandParameter="0"
                 Content="Single Class Example">
-                <utu:Chip.Icon>
+                <!--<utu:Chip.Icon>
                     <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE943;" />
-                </utu:Chip.Icon>
+                </utu:Chip.Icon>-->
             </utu:Chip>
             <utu:Chip
                 Command="{x:Bind VM.ExampleCommand}"
                 CommandParameter="1"
                 Content="Multiple Class Example">
-                <utu:Chip.Icon>
+                <!--<utu:Chip.Icon>
                     <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE943;" />
-                </utu:Chip.Icon>
+                </utu:Chip.Icon>-->
             </utu:Chip>
             <utu:Chip
                 Command="{x:Bind VM.ExampleCommand}"
                 CommandParameter="2"
                 Content="Json Example(Coming soon)"
                 IsEnabled="False">
-                <utu:Chip.Icon>
+                <!--<utu:Chip.Icon>
                     <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE943;" />
-                </utu:Chip.Icon>
+                </utu:Chip.Icon>-->
             </utu:Chip>
         </utu:ChipGroup>
         <Grid
@@ -415,9 +415,9 @@
             Visibility="{x:Bind VM.IsPreviewAvailable, Mode=OneWay}">
             <utu:ChipGroup Style="{StaticResource AssistChipGroupStyle}">
                 <utu:Chip Command="{x:Bind VM.GoToPreview}" Content="XAML Preview available!">
-                    <utu:Chip.Icon>
+                    <!--<utu:Chip.Icon>
                         <SymbolIcon Symbol="PreviewLink" />
-                    </utu:Chip.Icon>
+                    </utu:Chip.Icon>-->
                 </utu:Chip>
             </utu:ChipGroup>
         </win:StackPanel>

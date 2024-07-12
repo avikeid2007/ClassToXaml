@@ -72,7 +72,7 @@ public partial class MainViewModel : ObservableObject
     public bool IsMarried { get; set; }
 }";
     private string placeHolderJson => @"{""maiden"":null,""suffix"":null,""givenName"":null,""middleName"":null,""surname"":null}";
-    public string placeHolderMultiClass => @"public class Name
+    private string placeHolderMultiClass => @"public class Name
 {
     public string FirstName { get; set; }
     public string MiddleName { get; set; }
@@ -94,14 +94,15 @@ public class Address
 }";
 
 
-    public RelayCommand GenerateCommand => new RelayCommand(OnGenerateCommandExecuted);
-    public RelayCommand CopyCommand => new RelayCommand(OnCopyCommandExecuted);
-    public RelayCommand ClearCommand => new RelayCommand(OnClearCommandExecuted);
-    static IEnumerable<Property> GetPublicProperty(string code)
+    public RelayCommand GenerateCommand => new(OnGenerateCommandExecuted);
+    public RelayCommand CopyCommand => new(OnCopyCommandExecuted);
+    public RelayCommand ClearCommand => new(OnClearCommandExecuted);
+
+    private static List<Property>? GetPublicProperty(string code)
     {
         try
         {
-            List<Property> properties = new List<Property>();
+            List<Property> properties = [];
             // Parse the code into a syntax tree
             SyntaxTree tree = CSharpSyntaxTree.ParseText(code);
             CompilationUnitSyntax root = tree.GetCompilationUnitRoot();
@@ -180,7 +181,7 @@ public class Address
     }
     private static List<string> ExtractClassDefinitions(string fileContent)
     {
-        List<string> classDefinitions = new List<string>();
+        List<string> classDefinitions = [];
         string classPattern = @"public\s+class\s+\w+\s*{";
         MatchCollection matches = Regex.Matches(fileContent, classPattern);
         foreach (Match match in matches)
@@ -240,7 +241,7 @@ public class Address
     private string GenerateXaml(string classText, int columnCount)
     {
         var properties = GetPublicProperty(classText);
-        if (properties == null || !properties.Any())
+        if (properties == null || properties.Count == 0)
         {
             return string.Empty;
         }

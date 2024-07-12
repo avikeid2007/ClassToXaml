@@ -44,9 +44,9 @@ public class App : Application
             new RouteMap("", View: views.FindByViewModel<ShellViewModel>(),
                 Nested: new RouteMap[]
                 {
-                    new RouteMap("Main", View: views.FindByViewModel<MainViewModel>()),
-                    new RouteMap("Second", View: views.FindByViewModel<SecondViewModel>()),
-                     new RouteMap("Preview", View: views.FindByViewModel<PreviewViewModel>()),
+                    new("Main", View: views.FindByViewModel<MainViewModel>()),
+                    new("Second", View: views.FindByViewModel<SecondViewModel>()),
+                     new("Preview", View: views.FindByViewModel<PreviewViewModel>()),
                 }
             )
         );
